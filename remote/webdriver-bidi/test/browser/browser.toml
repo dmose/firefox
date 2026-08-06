@@ -6,6 +6,8 @@ args = [
 ]
 support-files = ["head.js"]
 
+["browser_ExtensionBiDiBridge.js"]
+
 ["browser_ProxyPerUserContextManager.js"]
 
 ["browser_RemoteValue.js"]
@@ -21,3 +23,5 @@ support-files = ["head.js"]
 ["browser_MozSummarization.js"]
 
 ["browser_MozTranslation.js"]
+
+["browser_dynamic_module_registry.js"]

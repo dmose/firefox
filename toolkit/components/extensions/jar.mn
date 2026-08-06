@@ -50,6 +50,7 @@ toolkit.jar:
     content/extensions/parent/ext-toolkit.js (parent/ext-toolkit.js)
     content/extensions/parent/ext-trial-ml.js (parent/ext-trial-ml.js)
     content/extensions/parent/ext-userScripts.js (parent/ext-userScripts.js)
+    content/extensions/parent/ext-webDriverBiDi.js (parent/ext-webDriverBiDi.js)
     content/extensions/parent/ext-webRequest.js (parent/ext-webRequest.js)
     content/extensions/parent/ext-webNavigation.js (parent/ext-webNavigation.js)
     content/extensions/child/ext-backgroundPage.js (child/ext-backgroundPage.js)
@@ -67,4 +68,5 @@ toolkit.jar:
     content/extensions/child/ext-toolkit.js (child/ext-toolkit.js)
     content/extensions/child/ext-userScripts.js (child/ext-userScripts.js)
     content/extensions/child/ext-userScripts-content.js (child/ext-userScripts-content.js)
+    content/extensions/child/ext-webDriverBiDi.js (child/ext-webDriverBiDi.js)
     content/extensions/child/ext-webRequest.js (child/ext-webRequest.js)

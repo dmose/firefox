@@ -1,0 +1,102 @@
+[
+  {
+    "namespace": "manifest",
+    "types": [
+      {
+        "$extend": "PermissionNoPrompt",
+        "choices": [
+          {
+            "type": "string",
+            "enum": ["webDriverBiDi"]
+          }
+        ]
+      },
+      {
+        "$extend": "WebExtensionManifest",
+        "properties": {
+          "webdriver_bidi": {
+            "type": "object",
+            "optional": true,
+            "additionalProperties": { "$ref": "UnrecognizedProperty" },
+            "properties": {
+              "module": {
+                "type": "string",
+                "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$",
+                "description": "Name of the BiDi module, exposed to clients as ext:<module>."
+              },
+              "commands": {
+                "type": "array",
+                "optional": true,
+                "default": [],
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$"
+                }
+              },
+              "events": {
+                "type": "array",
+                "optional": true,
+                "default": [],
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$"
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "namespace": "webDriverBiDi",
+    "description": "Expose WebDriver BiDi commands and events from an extension.",
+    "permissions": ["webDriverBiDi"],
+    "functions": [
+      {
+        "name": "emitEvent",
+        "type": "function",
+        "async": true,
+        "description": "Emit a declared BiDi event to subscribed clients.",
+        "parameters": [
+          { "name": "eventName", "type": "string" },
+          {
+            "name": "params",
+            "type": "object",
+            "additionalProperties": { "type": "any" }
+          },
+          { "name": "contextId", "type": "string", "optional": true }
+        ]
+      },
+      {
+        "name": "getTabIdForContext",
+        "type": "function",
+        "async": true,
+        "description": "Resolve a BiDi navigable id to a tab id. Nested navigables resolve to the enclosing tab. Returns null if unresolvable.",
+        "parameters": [{ "name": "contextId", "type": "string" }]
+      },
+      {
+        "name": "getContextForTabId",
+        "type": "function",
+        "async": true,
+        "description": "Resolve a tab id to the BiDi navigable id of its top-level browsing context. Returns null if unresolvable.",
+        "parameters": [{ "name": "tabId", "type": "integer" }]
+      }
+    ],
+    "events": [
+      {
+        "name": "onCommand",
+        "type": "function",
+        "description": "Fired when a BiDi client invokes a declared command. The listener's return value becomes the command result. Any extension context may add a listener, but only one handles a given command: the most recently added listener which is still alive.",
+        "parameters": [
+          { "name": "command", "type": "string" },
+          {
+            "name": "params",
+            "type": "object",
+            "additionalProperties": { "type": "any" }
+          }
+        ]
+      }
+    ]
+  }
+]

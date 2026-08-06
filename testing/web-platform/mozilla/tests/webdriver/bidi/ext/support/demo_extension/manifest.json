@@ -1,0 +1,15 @@
+{
+  "manifest_version": 2,
+  "name": "BiDi demo extension",
+  "version": "1.0",
+  "browser_specific_settings": {
+    "gecko": { "id": "bidi-demo@mozilla.org" }
+  },
+  "permissions": ["webDriverBiDi", "tabs"],
+  "webdriver_bidi": {
+    "module": "demo",
+    "commands": ["listTabs", "titleForContext", "ping", "fail"],
+    "events": ["pinged", "tabCreated"]
+  },
+  "background": { "scripts": ["background.js"] }
+}

@@ -94,3 +94,99 @@ ChromeUtils.defineESModuleGetters(modules.windowglobal.moz, {
   debugging:
     "chrome://remote/content/webdriver-bidi/modules/windowglobal/moz/debugging.sys.mjs",
 });
+
+const dynamicModules = new Map();
+const invalidationCallbacks = new Set();
+
+function invalidateDynamicModule(key) {
+  for (const callback of invalidationCallbacks) {
+    try {
+      callback(key);
+    } catch (e) {
+      console.error(
+        `Dynamic module invalidation callback failed for ${key}`,
+        e
+      );
+    }
+  }
+}
+
+/**
+ * Register a module class which can be resolved at runtime, in addition to the
+ * static modules declared above. Dynamic modules are only resolved for the ROOT
+ * module folder and their name is always namespaced.
+ *
+ * @param {string} namespace
+ *     The namespace of the module, eg "ext".
+ * @param {string} name
+ *     The name of the module within the namespace.
+ * @param {class<Module>} moduleClass
+ *     The class to resolve for this module name.
+ * @throws {Error}
+ *     If a module is already registered for this namespace and name.
+ */
+export function registerDynamicModule(namespace, name, moduleClass) {
+  const key = `${namespace}:${name}`;
+  if (dynamicModules.has(key)) {
+    throw new Error(`Dynamic module "${key}" is already registered`);
+  }
+  dynamicModules.set(key, moduleClass);
+  invalidateDynamicModule(key);
+}
+
+/**
+ * Remove a module registered via registerDynamicModule and notify the
+ * invalidation callbacks so that cached instances can be dropped. No-op if no
+ * module is registered for this namespace and name.
+ *
+ * @param {string} namespace
+ *     The namespace of the module, eg "ext".
+ * @param {string} name
+ *     The name of the module within the namespace.
+ */
+export function unregisterDynamicModule(namespace, name) {
+  const key = `${namespace}:${name}`;
+  if (!dynamicModules.delete(key)) {
+    return;
+  }
+
+  invalidateDynamicModule(key);
+}
+
+/**
+ * Add a callback invoked with the module name ("namespace:name") of a dynamic
+ * module which was registered or unregistered. Consumers caching dynamic
+ * module instances or misses should use this to invalidate them, and MUST
+ * remove their callback when they are destroyed.
+ *
+ * @param {Function} callback
+ *     The callback to add.
+ */
+export function addDynamicModuleInvalidationCallback(callback) {
+  invalidationCallbacks.add(callback);
+}
+
+/**
+ * Remove a callback added via addDynamicModuleInvalidationCallback.
+ *
+ * @param {Function} callback
+ *     The callback to remove.
+ */
+export function removeDynamicModuleInvalidationCallback(callback) {
+  invalidationCallbacks.delete(callback);
+}
+
+/**
+ * Retrieve the module class registered via registerDynamicModule for the
+ * provided namespace and name.
+ *
+ * @param {string} namespace
+ *     The namespace of the module, eg "ext".
+ * @param {string} name
+ *     The name of the module within the namespace.
+ * @returns {class<Module>|null}
+ *     The registered class, or null if there is none.
+ */
+export function getDynamicModule(namespace, name) {
+  return dynamicModules.get(`${namespace}:${name}`) ?? null;
+}

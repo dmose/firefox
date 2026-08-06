@@ -1,0 +1,9 @@
+[DEFAULT]
+tags = "wd"
+subsuite = "remote"
+# Module.assertExperimentalCommandsEnabled reads this pref through a lazy getter
+# which caches on first access, so it cannot be flipped at runtime. These tests
+# need their own manifest to get a profile where it is off from startup.
+prefs = ["remote.experimental.enabled=false"]
+
+["browser_extension_module_experimental_disabled.js"]

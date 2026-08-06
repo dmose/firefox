@@ -3917,6 +3917,10 @@ pref("services.common.log.logger.tokenserverclient", "Debug");
   // captured screenshots reflect WebRender-specific rendering, at the cost of
   // every capture degrading to the composited viewport of the foreground tab.
   pref("remote.screenshot.use_readback", false);
+
+  // Timeout in milliseconds for a WebDriver BiDi command handled by a
+  // WebExtension. Covers background wake-up as well as handler execution.
+  pref("remote.webdriver-bidi.extension-command-timeout-ms", 30000);
 #endif
 
 // Enable the JSON View tool (an inspector for application/json documents).

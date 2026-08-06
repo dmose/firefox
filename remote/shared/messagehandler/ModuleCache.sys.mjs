@@ -42,7 +42,13 @@ ChromeUtils.defineESModuleGetters(protocols.bidi, {
   // Additional protocols might use a different registry for their modules,
   // in which case this will no longer be a constant but will instead depend on
   // the protocol owning the MessageHandler. See Bug 1722464.
+  addDynamicModuleInvalidationCallback:
+    "chrome://remote/content/webdriver-bidi/modules/ModuleRegistry.sys.mjs",
+  getDynamicModule:
+    "chrome://remote/content/webdriver-bidi/modules/ModuleRegistry.sys.mjs",
   modules:
+    "chrome://remote/content/webdriver-bidi/modules/ModuleRegistry.sys.mjs",
+  removeDynamicModuleInvalidationCallback:
     "chrome://remote/content/webdriver-bidi/modules/ModuleRegistry.sys.mjs",
 });
 // eslint-disable-next-line mozilla/lazy-getter-object-name
@@ -88,6 +94,7 @@ export class ModuleCache {
   #messageHandler;
   #messageHandlerType;
   #modules;
+  #onDynamicModuleChanged;
   #protocol;
 
   /**
@@ -109,12 +116,32 @@ export class ModuleCache {
     )
       ? protocols.test
       : protocols.bidi;
+
+    // Dynamic modules can only be resolved for the ROOT layer, so only ROOT
+    // caches need to be notified when one changes.
+    if (
+      this.#messageHandlerType === lazy.RootMessageHandler.type &&
+      this.#protocol.addDynamicModuleInvalidationCallback
+    ) {
+      this.#onDynamicModuleChanged = moduleName =>
+        this.#evictModule(moduleName);
+      this.#protocol.addDynamicModuleInvalidationCallback(
+        this.#onDynamicModuleChanged
+      );
+    }
   }
 
   /**
    * Destroy all instantiated modules.
    */
   destroy() {
+    if (this.#onDynamicModuleChanged) {
+      this.#protocol.removeDynamicModuleInvalidationCallback(
+        this.#onDynamicModuleChanged
+      );
+      this.#onDynamicModuleChanged = null;
+    }
+
     this.#modules.forEach(module => module?.destroy());
   }
 
@@ -207,7 +234,27 @@ export class ModuleCache {
   }
 
   /**
+   * Remove and destroy the cached instances created for the provided module
+   * name, so that a subsequent lookup will resolve the module class again.
+   *
+   * @param {string} moduleName
+   *     The name of the module to evict.
+   */
+  #evictModule(moduleName) {
+    for (const [key, module] of this.#modules) {
+      if (key.startsWith(`${moduleName}-`)) {
+        this.#modules.delete(key);
+        module?.destroy();
+      }
+    }
+  }
+
+  /**
    * Retrieve the module class matching the provided module name and folder.
+   *
+   * For namespaced module names targeting the ROOT folder, a miss in the static
+   * module tree falls back to the protocol's dynamic module registry, which
+   * modules registered at runtime (eg by WebExtensions) are added to.
    *
    * @param {string} moduleName
    *     The name of the module to get the class for.
@@ -242,13 +289,24 @@ export class ModuleCache {
     }
 
     let modulePath = this.#protocol.modules[moduleFolder];
+    let namespace = null;
     if (moduleName.includes(":")) {
       const parts = moduleName.split(":");
+      namespace = parts[0];
       moduleName = parts[1];
       modulePath = modulePath[parts[0]];
     }
 
-    const moduleClass = modulePath?.[moduleName] ?? null;
+    let moduleClass = modulePath?.[moduleName] ?? null;
+
+    if (
+      moduleClass === null &&
+      namespace !== null &&
+      moduleFolder === lazy.RootMessageHandler.modulePath
+    ) {
+      moduleClass =
+        this.#protocol.getDynamicModule?.(namespace, moduleName) ?? null;
+    }
 
     // Module hit/miss logs generate a lot of spam. Only log if verbose is true.
     //

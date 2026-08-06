@@ -71,6 +71,11 @@ extensions.registerModules({
     scopes: ["content_child"],
     paths: [["userScripts", "onBeforeScript"]],
   },
+  webDriverBiDi: {
+    url: "chrome://extensions/content/child/ext-webDriverBiDi.js",
+    scopes: ["addon_child"],
+    paths: [["webDriverBiDi"]],
+  },
   webRequest: {
     url: "chrome://extensions/content/child/ext-webRequest.js",
     scopes: ["addon_child"],

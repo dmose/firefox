@@ -184,6 +184,13 @@
     "scopes": ["content_child"],
     "paths": [["userScripts", "onBeforeScript"]]
   },
+  "webDriverBiDi": {
+    "url": "chrome://extensions/content/parent/ext-webDriverBiDi.js",
+    "schema": "chrome://extensions/content/schemas/webdriver_bidi.json",
+    "scopes": ["addon_parent"],
+    "manifest": ["webdriver_bidi"],
+    "paths": [["webDriverBiDi"]]
+  },
   "webNavigation": {
     "url": "chrome://extensions/content/parent/ext-webNavigation.js",
     "schema": "chrome://extensions/content/schemas/web_navigation.json",
