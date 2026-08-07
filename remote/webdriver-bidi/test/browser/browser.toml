@@ -15,3 +15,9 @@ support-files = ["head.js"]
 ["browser_UserPromptHandlerManager.js"]
 
 ["browser_WebDriverBiDi.js"]
+
+["browser_MozPageExtractor.js"]
+
+["browser_MozSummarization.js"]
+
+["browser_MozTranslation.js"]

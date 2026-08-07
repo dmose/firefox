@@ -26,3 +26,29 @@ function inline(src, doctype = "html") {
     doc
   )}`;
 }
+
+async function captureRejectedError(promise) {
+  try {
+    await promise;
+  } catch (error) {
+    return error;
+  }
+  throw new Error("Expected promise to reject");
+}
+
+function getBiDiErrorPacket(error) {
+  const { WebDriverBiDiConnection } = ChromeUtils.importESModule(
+    "chrome://remote/content/webdriver-bidi/WebDriverBiDiConnection.sys.mjs"
+  );
+  let packet;
+  WebDriverBiDiConnection.prototype.sendError.call(
+    {
+      send(value) {
+        packet = value;
+      },
+    },
+    1,
+    error
+  );
+  return packet;
+}

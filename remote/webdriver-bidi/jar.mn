@@ -53,7 +53,10 @@ remote.jar:
 
   # WebDriver BiDi root moz modules
   content/webdriver-bidi/modules/root/moz/debugging.sys.mjs (modules/root/moz/debugging.sys.mjs)
+  content/webdriver-bidi/modules/root/moz/pageExtractor.sys.mjs (modules/root/moz/pageExtractor.sys.mjs)
   content/webdriver-bidi/modules/root/moz/profiler.sys.mjs (modules/root/moz/profiler.sys.mjs)
+  content/webdriver-bidi/modules/root/moz/summarization.sys.mjs (modules/root/moz/summarization.sys.mjs)
+  content/webdriver-bidi/modules/root/moz/translation.sys.mjs (modules/root/moz/translation.sys.mjs)
 
   # WebDriver BiDi windowglobal moz modules
   content/webdriver-bidi/modules/windowglobal/moz/debugging.sys.mjs (modules/windowglobal/moz/debugging.sys.mjs)

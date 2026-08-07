@@ -43,8 +43,14 @@ ChromeUtils.defineESModuleGetters(modules.root, {
 ChromeUtils.defineESModuleGetters(modules.root.moz, {
   debugging:
     "chrome://remote/content/webdriver-bidi/modules/root/moz/debugging.sys.mjs",
+  pageExtractor:
+    "chrome://remote/content/webdriver-bidi/modules/root/moz/pageExtractor.sys.mjs",
   profiler:
     "chrome://remote/content/webdriver-bidi/modules/root/moz/profiler.sys.mjs",
+  summarization:
+    "chrome://remote/content/webdriver-bidi/modules/root/moz/summarization.sys.mjs",
+  translation:
+    "chrome://remote/content/webdriver-bidi/modules/root/moz/translation.sys.mjs",
 });
 
 // eslint-disable-next-line mozilla/lazy-getter-object-name
