@@ -81,6 +81,7 @@ add_task(async function test_translate_uses_translator_and_forwards_html() {
       sourceText: "<p>Hello</p>",
       isHTML: true,
     },
+    { type: "TranslationsPort:Close" },
   ]);
   Assert.ok(port.closed);
 });
